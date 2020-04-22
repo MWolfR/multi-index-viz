@@ -8,26 +8,27 @@ This tool generates an interactive visualization of any pandas.Series with the f
 
 The visualization is then a Sankey plot of the strengths of overlap between the values of two columns of the MultiIndex.
 Example - our Series object looks like this:
-Fruit         Color   Taste
-apples        red     delicious    1.00
-                      yuck         0.10
-              purple  delicious    0.00
-                      yuck         0.05
-              green   delicious    0.80
-                      yuck         0.20
-grapes        red     delicious    0.20
-                      yuck         0.10
-              purple  delicious    1.20
-                      yuck         0.30
-              green   delicious    1.50
-                      yuck         0.05
-strawberries  red     delicious    2.20
-                      yuck         0.00
-              purple  delicious    0.00
-                      yuck         2.10
-              green   delicious    0.00
-                      yuck         3.00
-dtype: float64
+
+    Fruit         Color   Taste
+    apples        red     delicious    1.00
+                          yuck         0.10
+                  purple  delicious    0.00
+                          yuck         0.05
+                  green   delicious    0.80
+                          yuck         0.20
+    grapes        red     delicious    0.20
+                          yuck         0.10
+                  purple  delicious    1.20
+                          yuck         0.30
+                  green   delicious    1.50
+                          yuck         0.05
+    strawberries  red     delicious    2.20
+                          yuck         0.00
+                  purple  delicious    0.00
+                          yuck         2.10
+                  green   delicious    0.00
+                          yuck         3.00
+    dtype: float64
 
 Thus, when choosing the columns "Color" and "Taste", the overlap of "red" and "delicious" would be 1.0 + 0.2 + 2.2 = 3.4,
 while the overlap of "red" and "yuck" would be 0.1 + 0.1 + 0.0 = 0.2.
