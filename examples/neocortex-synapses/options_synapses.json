@@ -85,6 +85,24 @@
             "Target Region": "To {0}"
         }
     },
+    "Label groups": {
+        "Region": {
+            "Prefrontal": ["FRP","MOs","ACAd","ACAv","PL","ILA","ORBl","ORBm","ORBvl"],
+            "Anterolateral": ["AId","AIv","AIp","GU","VISC"],
+            "Visual": ["VISal","VISl","VISp","VISpl","VISli","VISpor","VISrl"],
+            "Somatomotor":["SSs","SSp-bfd","SSp-tr","SSp-ll","SSp-ul","SSp-un","SSp-n","SSp-m","MOp"],
+            "Medial": ["VISa","VISam","VISpm","RSPagl","RSPd","RSPv"],
+            "Temporal": ["AUDd","AUDp","AUDpo","AUDv","TEa","PERI","ECT"]
+        },
+        "Target Region": {
+            "Prefrontal": ["FRP","MOs","ACAd","ACAv","PL","ILA","ORBl","ORBm","ORBvl"],
+            "Anterolateral": ["AId","AIv","AIp","GU","VISC"],
+            "Visual": ["VISal","VISl","VISp","VISpl","VISli","VISpor","VISrl"],
+            "Somatomotor":["SSs","SSp-bfd","SSp-tr","SSp-ll","SSp-ul","SSp-un","SSp-n","SSp-m","MOp"],
+            "Medial": ["VISa","VISam","VISpm","RSPagl","RSPd","RSPv"],
+            "Temporal": ["AUDd","AUDp","AUDpo","AUDv","TEa","PERI","ECT"]
+        }
+    },
     "Version": "Recipe version 1.15",
     "App":{
         "Default grouping": [["Hemisphere"],

@@ -12,6 +12,9 @@ class RegionProfile(object):
         lbl_translator = options["Group translations"]
         self.possible_grp_lbl = [lbl_translator.get(_x, _x) for _x in self.possible_grp_cat]
         self.filter_values = dict([(lbl, self._data.labels_of(lbl)) for lbl in self.possible_grp_cat])
+        self._label_groups = options.get("Label groups", {})
+        for k, v in self._label_groups.items():
+            self.filter_values[k].extend(list(v.keys()))
         self._cols = options["Colors"]
         self._label_fmt = options["Labelling"]
         self._height = options["App"].get("Height", 700)
@@ -21,8 +24,11 @@ class RegionProfile(object):
     def filter(self, fltr_spec):
         if len(fltr_spec) == 0:
             return self._data
-        else:
-            return self._data.filter(**dict(fltr_spec))
+        fltr_spec = dict(fltr_spec)
+        for k, v in self._label_groups.items():
+            if k in fltr_spec:
+                fltr_spec[k] = numpy.hstack([v.get(_x, _x) for _x in fltr_spec[k]])
+        return self._data.filter(**fltr_spec)
 
     def _labeller_factory(self, grouping):
         grouping_sorted = [_x for _x in self._label_fmt["Hierarchy"]
