@@ -1,0 +1,54 @@
+#!/usr/bin/env python
+import pandas
+import os
+import json
+
+
+def read_data(fn):
+    with open(fn, "r") as fid:
+        data = pandas.read_json(fid, orient="table")
+    return data
+
+
+def gen_options(fn):
+    data = read_data(fn)
+    splt = os.path.split(os.path.abspath(fn))
+    fn_out = os.path.join(splt[0], "options-" + splt[1])
+    assert not os.path.exists(fn_out), "Options file {0} already exists!".format(fn_out)
+    opts = {"Data": splt[1],
+            "Colors": {},
+            "Group translations": {},
+            "Labelling": {},
+            "Version": splt[1],
+            "App": {}}
+
+    cols = list(data.index.names)
+    assert not any([_x is None for _x in cols]), "All columns in the MultiIndex must have names!"
+    opts["Colors"]["Hierarchy"] = cols
+    opts["Colors"]["Values"] = {"_default": "rgba(120, 120, 120, 1.0)",
+                                "ALL": "rgba(10, 10, 10, 1.0)"}
+    opts["Labelling"]["Hierarchy"] = cols
+    opts["Labelling"]["Values"] = {}
+
+    grps = [[_col] for _col in cols[:4]]
+    grps = grps + [[] for _ in range(4 - len(grps))]
+
+    opts["App"]["Default grouping"] = grps
+    opts["App"]["Default filter"] = [[[], []], [[], []], [[], []]]
+    opts["App"]["Strength threshold"] = [0.0, data.values.sum()]
+
+    print(opts)
+
+    with open(fn_out, "w") as fid:
+        json.dump(opts, fid)
+
+
+if __name__ == "__main__":
+    import sys
+    if len(sys.argv) < 2 or sys.argv[1] == "--help":
+        print("""Use: {0} path/to/data.json.
+        Writes a default config file to path/to/options-data.json.
+        You can then visualize data.json by running:
+            python viz_multi_index.py path/to/options-data.json""")
+        sys.exit(0)
+    gen_options(sys.argv[1])

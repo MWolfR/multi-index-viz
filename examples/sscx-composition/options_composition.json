@@ -1,0 +1,46 @@
+{   "Data": "SSCX-neurons.json",
+    "Colors": {
+        "Hierarchy": ["etype", "layer", "morph_class", "mtype", "synapse_class"],
+        "Values": {
+            "EXC": "rgba(0, 250, 0, 1.0)",
+            "INH": "rgba(128, 128, 0, 1.0)",
+            "PYR": "rgba(255, 50, 0, 1.0)",
+            "INT": "rgba(200, 0, 120, 1.0)",
+            "1": "rgba(150, 150, 240, 1.0)",
+            "2": "rgba(235, 120, 145, 1.0)",
+            "3": "rgba(120, 20, 220, 1.0)",
+            "4": "rgba(225, 100, 245, 1.0)",
+            "5": "rgba(250, 200, 80, 1.0)",
+            "6": "rgba(90, 250, 200, 1.0)",
+            "_default": "rgba(150, 150, 150, 1.0)",
+            "ALL": "rgba(105, 45, 200, 1.0)"
+        }
+    },
+    "Group translations": {
+        "etype": "By etype",
+        "layer": "By layer",
+        "morph_class": "By morphology class",
+        "mtype": "By mtype",
+        "synapse_class": "By synapse class"
+    },
+    "Labelling": {
+        "Hierarchy": ["etype", "layer", "morph_class", "mtype", "synapse_class"],
+        "Values": {
+            "etype": "{0}",
+            "layer": "{0}",
+            "morph_class": "{0}",
+            "mtype": "{0}",
+            "synapse_class": "{0}"
+        }
+    },
+    "Version": "SSCX-v6a.r0",
+    "App":{
+        "Default grouping": [["etype"],
+                             ["layer"],
+                             ["morph_class"],
+                             ["synapse_class"]
+                            ],
+        "Default filter": [[[], []], [[], []], [[], []]],
+        "Strength threshold": [0.0, 5000.0]
+    }
+}

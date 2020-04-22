@@ -1,0 +1,40 @@
+{   "Data": "fruits.json",
+    "Colors": {
+        "Hierarchy": ["Color", "Fruit", "Taste"],
+        "Values": {
+            "red": "rgba(250, 0, 0, 1.0)",
+            "purple": "rgba(128, 0, 150, 1.0)",
+            "green": "rgba(0, 250, 0, 1.0)",
+            "apples": "rgba(200, 0, 120, 1.0)",
+            "grapes": "rgba(150, 150, 240, 1.0)",
+            "strawberries": "rgba(235, 120, 145, 1.0)",
+            "delicious": "rgba(120, 20, 220, 1.0)",
+            "yuck": "rgba(225, 100, 245, 1.0)",
+            "_default": "rgba(150, 150, 150, 1.0)",
+            "ALL": "rgba(0, 0, 0, 1.0)"
+        }
+    },
+    "Group translations": {
+        "Color": "By color",
+        "Fruit": "By fruit",
+        "Taste": "By taste"
+    },
+    "Labelling": {
+        "Hierarchy": ["Color", "Fruit", "Taste"],
+        "Values": {
+            "Color": "{0}",
+            "Fruit": "{0}",
+            "Taste": "{0}"
+        }
+    },
+    "Version": "Example",
+    "App":{
+        "Default grouping": [[],
+                             ["Fruit"],
+                             ["Color"],
+                             ["Taste"]
+                            ],
+        "Default filter": [[[], []], [[], []], [[], []]],
+        "Strength threshold": [0.0, 3.0]
+    }
+}

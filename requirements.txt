@@ -1,0 +1,7 @@
+numpy
+jsonschema
+dash
+ipywidgets
+plotly
+gunicorn
+pandas
