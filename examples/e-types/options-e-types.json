@@ -1,0 +1,14 @@
+{
+  "Data": "e-types.json",
+  "Colors": {
+    "Hierarchy": ["e-type", "m-type", "mechanism", "section"],
+    "Values": {"_default": "rgba(120, 120, 120, 1.0)",
+      "ALL": "rgba(10, 10, 10, 1.0)"}
+  },
+  "Group translations": {},
+  "Labelling": {"Hierarchy": ["e-type", "m-type", "mechanism", "section"],
+    "Values": {}},
+  "Version": "Conductances of various mechanisms in BBP me-types",
+  "App": {"Default grouping": [[], ["e-type"], ["mechanism"], ["section"]],
+    "Default filter": [[[], []], [[], []], [[], []]],
+    "Strength threshold": [0.0, 2280.8151332132]}}
