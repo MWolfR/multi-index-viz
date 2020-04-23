@@ -25,7 +25,7 @@ def read_config(config_fn):
     else:
         data = pandas.read_json(options["Data"], orient="table")
     if "Filter control types" not in options["App"]:
-        options["Filter control types"] = ["Dropdown" for _ in options["App"]["Default filter"]]
+        options["App"]["Filter control types"] = ["Dropdown" for _ in options["App"]["Default filter"]]
     return data, options
 
 
