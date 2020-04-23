@@ -6,22 +6,29 @@ import dash_html_components as html
 str_fltr, str_f_val = 'filter-dropdown{0}', 'filter-value-dropdown{0}'
 
 
-def make_filter_selectors(grouper_obj, default_filters, default_filter_vals):
+def make_filter_selectors(grouper_obj, default_filters, default_filter_vals, fltr_ctrl_types):
     fltr_opts_dict = [dict([('label', _lbl), ('value', _val)]) for _lbl, _val
                       in zip(grouper_obj.possible_grp_lbl,
                              grouper_obj.possible_grp_cat)]
-    filter_selectors = [dcc.Dropdown(
-        options=fltr_opts_dict,
-        value=_fltr,
-        id=str_fltr.format(i))
-        for i, _fltr in enumerate(default_filters)]
-    filter_val_selectors = [dcc.Dropdown(
-        options=[],
-        value=_fvals,
-        multi=True,
-        id=str_f_val.format(i))
-        for i, _fvals in enumerate(default_filter_vals)]
-
+    filter_selectors, filter_val_selectors = [], []
+    for i in range(len(default_filters)):
+        filter_selectors.append(dcc.Dropdown(
+                                            options=fltr_opts_dict,
+                                            value=default_filters[i],
+                                            id=str_fltr.format(i)))
+        if fltr_ctrl_types[i] == "Dropdown":
+            filter_val_selectors.append(dcc.Dropdown(
+                                                    options=[],
+                                                    value=default_filter_vals[i],
+                                                    multi=True,
+                                                    id=str_f_val.format(i)))
+        elif fltr_ctrl_types[i] == "RangeSlider":
+            filter_val_selectors.append(dcc.RangeSlider(
+                min=0,
+                max=100,
+                step=1,
+                value=default_filter_vals[i],
+                id=str_f_val.format(i)))
     return filter_selectors, filter_val_selectors
 
 

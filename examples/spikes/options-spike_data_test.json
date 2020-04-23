@@ -1,0 +1,11 @@
+{"Data": "spike_data_test.json",
+  "Colors": {"Hierarchy": ["mtype", "etype", "layer", "time-bin", "ana_target", "ca1p2", "seed54434"], "Values": {"_default": "rgba(120, 120, 120, 1.0)", "ALL": "rgba(10, 10, 10, 1.0)"}},
+  "Group translations": {},
+  "Labelling": {"Hierarchy": ["mtype", "etype", "layer", "time-bin", "ana_target", "ca1p2", "seed54434"], "Values": {}},
+  "Version": "spike_data_test.json",
+  "App": {
+    "Default grouping": [["mtype"], ["etype"], ["layer"], ["time-bin"]],
+    "Default filter": [["time-bin", [0, 500]], [[], []], [[], []]],
+    "Strength threshold": [0.0, 250000.0],
+    "Filter control types": ["RangeSlider", "Dropdown", "Dropdown"]}
+}

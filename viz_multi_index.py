@@ -2,6 +2,7 @@ import json
 import dash
 import pandas
 import os
+import numpy
 
 import dash_core_components as dcc
 import dash_html_components as html
@@ -23,6 +24,8 @@ def read_config(config_fn):
             data = pandas.read_json(fid, orient="table")
     else:
         data = pandas.read_json(options["Data"], orient="table")
+    if "Filter control types" not in options["App"]:
+        options["Filter control types"] = ["Dropdown" for _ in options["App"]["Default filter"]]
     return data, options
 
 
@@ -42,15 +45,19 @@ def read_groupings(groups_and_actives):
             if len(act)]
 
 
-def read_filters(fltr_vals_dicts, filters_and_values):
+def read_filters(fltr_vals_dicts, filters_and_values, fltr_ctrl_types):
     filters = filters_and_values[::2]
     f_values = filters_and_values[1::2]
     filter_spec = []
-    for filter, values in zip(filters, f_values):
+    for filter, values, f_type in zip(filters, f_values, fltr_ctrl_types):
         if filter is None:
             continue
-        valids = fltr_vals_dicts.get(filter, [])
-        values = [_val for _val in values if _val in valids]
+        if f_type == "Dropdown":
+            valids = fltr_vals_dicts.get(filter, [])
+            values = [_val for _val in values if _val in valids]
+        elif f_type == "RangeSlider":
+            valids = fltr_vals_dicts.get(filter, numpy.array([]))
+            values = [_val for _val in valids if _val >= values[0] and _val <= values[1]]
         if len(values):
             filter_spec.append((filter, values))
     return filter_spec
@@ -64,6 +71,7 @@ def main(config_fn, return_app=False):
     filter_spec = [(_fltr, _fval) for _fltr, _fval in
                    zip(default_filters, default_filter_vals)
                    if len(_fval) and _fltr is not None]
+    fltr_ctrl_types = options["App"]["Filter control types"]
     # Set up initial state
     group_obj = RegionProfile(data, options)
 
@@ -79,7 +87,8 @@ def main(config_fn, return_app=False):
     inputs = [Input(thresh_selector.id, 'value')]
 
     filter_selectors, filter_val_selectors = make_filter_selectors(group_obj, default_filters,
-                                                                                    default_filter_vals)
+                                                                   default_filter_vals,
+                                                                   fltr_ctrl_types=fltr_ctrl_types)
     n_filters = len(filter_selectors)
     for f_sel, fv_sel in zip(filter_selectors, filter_val_selectors):
         inputs.extend([Input(f_sel.id, 'value'), Input(fv_sel.id, 'value')])
@@ -103,7 +112,7 @@ def main(config_fn, return_app=False):
         inputs
     )
     def master_callback(new_thresh, *args):
-        filters = read_filters(group_obj.filter_values, args[:(2 * n_filters)])
+        filters = read_filters(group_obj.filter_values, args[:(2 * n_filters)], fltr_ctrl_types)
         groupings = read_groupings(args[(2 * n_filters):])
         return group_obj.make_sankey(filters, groupings, new_thresh)
 
@@ -115,7 +124,30 @@ def main(config_fn, return_app=False):
         def filter_callback_fun(new_filter_cat):
             new_options = group_obj.fltr_vals_dicts.get(new_filter_cat, [])
             return new_options
-    [filter_value_callback(i) for i in range(len(filter_selectors))]
+
+    def slider_range_callback(i):
+        @app.callback(
+            [Output(str_f_val.format(i), "min"),
+            Output(str_f_val.format(i), "max"),
+             Output(str_f_val.format(i), "step"),
+             Output(str_f_val.format(i), "marks")],
+            [Input(str_fltr.format(i), 'value')]
+        )
+        def slider_callback_fun(new_filter_cat):
+            opts = group_obj.filter_values.get(new_filter_cat)
+            if isinstance(opts[0], str):
+                return no_update, no_update, no_update, no_update
+            mn, mx = numpy.min(opts), numpy.max(opts)
+            step = float(mx - mn) / 250
+            if len(opts) <= 10:
+                marks = dict([(int(mrk), str(mrk)) for mrk in opts])
+            else:
+                marks = dict([(int(v), str(v)) for v in numpy.linspace(mn, mx, 6)])
+            print (marks)
+            return mn, mx, step, marks
+
+    [filter_value_callback(i) if fltr_ctrl_types[i] == "Dropdown"
+     else slider_range_callback(i) for i in range(len(filter_selectors))]
 
     if return_app:
         return app
