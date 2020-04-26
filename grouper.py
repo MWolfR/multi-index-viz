@@ -23,6 +23,8 @@ class RegionProfile(object):
         self.make_plot = self.make_sankey
         if options["App"].get("Plot type", "Sankey") == "Sunburst":
             self.make_plot = self.make_sunburst
+        elif options["App"].get("Plot type", "Sankey") == "Bar":
+            self.make_plot = self.make_horizontal_bar
 
     def filter(self, fltr_spec):
         if len(fltr_spec) == 0:
@@ -86,6 +88,36 @@ class RegionProfile(object):
             colors.append(new_cols)
         return labels, str_mats, colors
 
+    def dataframe_for_plotting(self, fltr_spec, grouping_spec, threshold=0.0, include_color=False):
+        from pandas import DataFrame
+        filtered_data = self.filter(fltr_spec)
+        cat_groups = list(map(str, numpy.hstack(grouping_spec)))
+        group_labels = [', '.join(grp) if len(grp) else "ALL"
+                        for grp in grouping_spec]
+        group_labels = ["{0}:".format(i) + _x for i, _x in enumerate(group_labels)]
+
+        pool_conds = numpy.setdiff1d(filtered_data.conditions(), cat_groups).tolist()
+        if len(pool_conds):
+            tmp_dict = dict([(k, filtered_data.labels_of(k)) for k in filtered_data.conditions()])
+            filtered_data = filtered_data.pool(pool_conds,
+                                               func=numpy.sum)
+            for k, v in tmp_dict.items():
+                if len(v) == 1:
+                    filtered_data.add_label(k, v[0])
+
+        lbl_funcs = [self._labeller_factory(_grp) for _grp in grouping_spec]
+        if len(lbl_funcs) == 0:
+            lbl_funcs = [lambda x: "ALL"]
+        if include_color:
+            group_labels.append("_Color")
+            if len(grouping_spec) >= 2:
+                lbl_funcs.append(self._color_factory(grouping_spec[1]))
+            else:
+                lbl_funcs.append(lambda x: self._cols["Values"]["_default"])
+        out = [[_lbl(entry.cond) for _lbl in lbl_funcs] + [entry.res]
+               for entry in filtered_data.contents]
+        return DataFrame(out, columns=group_labels + ["_Value"])
+
     @staticmethod
     def get_plotly_labels(labels, colors):
         all_labels = []
@@ -126,27 +158,31 @@ class RegionProfile(object):
         return fwgt
 
     def make_sunburst(self, fltr_spec, grouping_spec, threshold=0.0):
-        from pandas import DataFrame
         import plotly.express as px
-        filtered_data = self.filter(fltr_spec)
-        cat_groups = list(map(str, numpy.hstack(grouping_spec)))
+        dframe = self.dataframe_for_plotting(fltr_spec, grouping_spec, threshold=threshold, include_color=False)
+        group_labels = dframe.columns.values[:-1]
 
-        pool_conds = numpy.setdiff1d(filtered_data.conditions(), cat_groups).tolist()
-        if len(pool_conds):
-            tmp_dict = dict([(k, filtered_data.labels_of(k)) for k in filtered_data.conditions()])
-            filtered_data = filtered_data.pool(pool_conds,
-                                               func=numpy.sum)
-            for k, v in tmp_dict.items():
-                if len(v) == 1:
-                    filtered_data.add_label(k, v[0])
+        sburst = px.sunburst(dframe, path=group_labels,
+                             values="_Value")
 
-        lbl_funcs = [self._labeller_factory(_grp) for _grp in grouping_spec]
-        out = [[_lbl(entry.cond) for _lbl in lbl_funcs] + [entry.res]
-               for entry in filtered_data.contents]
-        dframe = DataFrame(out)
-
-        sburst = px.sunburst(dframe, path=numpy.arange(len(lbl_funcs)).tolist(),
-                             values=len(lbl_funcs))
         fwgt = go.FigureWidget(sburst, layout=go.Layout())
+        fwgt.layout.height = self._height
+        return fwgt
+
+    def make_horizontal_bar(self, fltr_spec, grouping_spec, threshold=0.0):
+        dframe = self.dataframe_for_plotting(fltr_spec, grouping_spec,
+                                             threshold=threshold, include_color=True)
+        group_labels = dframe.columns.values
+
+        all_bars = []
+        for label, label_df in dframe.groupby(group_labels[1]):
+            all_bars.append(go.Bar(x=label_df["_Value"], y=label_df[group_labels[0]],
+                                   name=label, marker={'color': label_df["_Color"]},
+                                   orientation='h',
+                                   text=[', '.join(map(str, _row)) for _row in label_df[group_labels[1:-1]].values],
+                                   hoverinfo=['text', 'x']))
+
+        fwgt = go.FigureWidget(data=all_bars, layout=go.Layout())
+        fwgt.update_layout(barmode='stack')
         fwgt.layout.height = self._height
         return fwgt

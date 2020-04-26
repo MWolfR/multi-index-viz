@@ -112,6 +112,7 @@
                             ],
         "Default filter": [["Target Region", ["MOs"]], [[], []], [[], []]],
         "Strength threshold": [0.0, 1.0],
-        "Height": 800
+        "Height": 800,
+        "Plot type": "Bar"
     }
 }
