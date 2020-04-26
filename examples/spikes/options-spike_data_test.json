@@ -7,5 +7,7 @@
     "Default grouping": [["mtype"], ["etype"], ["layer"], ["time-bin"]],
     "Default filter": [["time-bin", [0, 500]], [[], []], [[], []]],
     "Strength threshold": [0.0, 250000.0],
-    "Filter control types": ["RangeSlider", "Dropdown", "Dropdown"]}
+    "Filter control types": ["RangeSlider", "Dropdown", "Dropdown"],
+    "Plot type": "Sunburst"
+  }
 }

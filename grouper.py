@@ -20,6 +20,9 @@ class RegionProfile(object):
         self._height = options["App"].get("Height", 700)
         self.fltr_vals_dicts = dict([(k, [dict([('label', _lbl), ('value', _lbl)]) for _lbl in lbls])
                                      for k, lbls in self.filter_values.items()])
+        self.make_plot = self.make_sankey
+        if options["App"].get("Plot type", "Sankey") == "Sunburst":
+            self.make_plot = self.make_sunburst
 
     def filter(self, fltr_spec):
         if len(fltr_spec) == 0:
@@ -122,5 +125,28 @@ class RegionProfile(object):
         fwgt.layout.height = self._height
         return fwgt
 
+    def make_sunburst(self, fltr_spec, grouping_spec, threshold=0.0):
+        from pandas import DataFrame
+        import plotly.express as px
+        filtered_data = self.filter(fltr_spec)
+        cat_groups = list(map(str, numpy.hstack(grouping_spec)))
 
+        pool_conds = numpy.setdiff1d(filtered_data.conditions(), cat_groups).tolist()
+        if len(pool_conds):
+            tmp_dict = dict([(k, filtered_data.labels_of(k)) for k in filtered_data.conditions()])
+            filtered_data = filtered_data.pool(pool_conds,
+                                               func=numpy.sum)
+            for k, v in tmp_dict.items():
+                if len(v) == 1:
+                    filtered_data.add_label(k, v[0])
 
+        lbl_funcs = [self._labeller_factory(_grp) for _grp in grouping_spec]
+        out = [[_lbl(entry.cond) for _lbl in lbl_funcs] + [entry.res]
+               for entry in filtered_data.contents]
+        dframe = DataFrame(out)
+
+        sburst = px.sunburst(dframe, path=numpy.arange(len(lbl_funcs)).tolist(),
+                             values=len(lbl_funcs))
+        fwgt = go.FigureWidget(sburst, layout=go.Layout())
+        fwgt.layout.height = self._height
+        return fwgt

@@ -81,7 +81,7 @@ def main(config_fn, return_app=False):
     app.config["suppress_callback_exceptions"] = True
 
     # Create interactive components
-    fig = group_obj.make_sankey(filter_spec, default_grouping, threshold=min_val)
+    fig = group_obj.make_plot(filter_spec, default_grouping, threshold=min_val)
 
     thresh_selector = make_threshold_selector(min_val, max_val, use_step)
     inputs = [Input(thresh_selector.id, 'value')]
@@ -114,7 +114,7 @@ def main(config_fn, return_app=False):
     def master_callback(new_thresh, *args):
         filters = read_filters(group_obj.filter_values, args[:(2 * n_filters)], fltr_ctrl_types)
         groupings = read_groupings(args[(2 * n_filters):])
-        return group_obj.make_sankey(filters, groupings, new_thresh)
+        return group_obj.make_plot(filters, groupings, new_thresh)
 
     def filter_value_callback(i):
         @app.callback(
