@@ -188,4 +188,13 @@ If a column has no value in the dict it remains unchanged. This means, the entry
 
   * Strength threshold: The plot can be filtered according to the strength of the overlap where all overlaps below a value are ignored.
     This entry is a list of length 2 specifying the minimal and maximal selectable value of that filtering.
+  
+  * Height (optional): The height of the main plot in pixels. Default value: 700
+  
+  * Plot type (optional): How the data is actually visualized. The default value is "Sankey", which leads to a Sankey plot.
+    Other options are "Starburst", which leads to a starburst plot and "Bar" which leads to bar plots that are vertically grouped and horizontally stacked.
+  
+  * Filter control types (optional): Determines how filtering is performed. The default value is "Dropdown", which leads to a dropdown menu from which the user can select one or multiple valid values.
+    Alternative: "RangeSlider", which leads to a slider from which the user selects a minimum and maximum value. If this is used in conjunction with non-numerical data, no filtering will be applied.
+    
 

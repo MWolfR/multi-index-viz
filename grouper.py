@@ -56,7 +56,7 @@ class RegionProfile(object):
 
         def make_color(label_dict):
             if len(grouping_sorted):
-                return col_dict.get(label_dict[grouping_sorted[0]],
+                return col_dict.get(str(label_dict[grouping_sorted[0]]),
                                     default_color)
             return all_color
         return make_color
