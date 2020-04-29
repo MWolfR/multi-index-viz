@@ -12,7 +12,7 @@ from dash.dash import no_update
 
 from grouper import RegionProfile
 from sankey_plot import make_filter_selectors, make_grouping_selectors,\
-    make_threshold_selector, html_layout, str_f_val, str_fltr
+    make_threshold_selector, make_plot_type_dropdown, html_layout, str_f_val, str_fltr
 
 
 def read_config(config_fn):
@@ -81,10 +81,13 @@ def main(config_fn, return_app=False):
     app.config["suppress_callback_exceptions"] = True
 
     # Create interactive components
-    fig = group_obj.make_plot(filter_spec, default_grouping, threshold=min_val)
+    # fig = group_obj.make_plot[options["App"].get("Plot type", "Sankey")](filter_spec, default_grouping,
+    #                                                                      threshold=min_val)
+    fig = group_obj.make_empty()
 
     thresh_selector = make_threshold_selector(min_val, max_val, use_step)
-    inputs = [Input(thresh_selector.id, 'value')]
+    plot_type_dropdown = make_plot_type_dropdown(options["App"].get("Plot type", "Sankey"))
+    inputs = [Input(thresh_selector.id, 'value'), Input(plot_type_dropdown.id, 'value')]
 
     filter_selectors, filter_val_selectors = make_filter_selectors(group_obj, default_filters,
                                                                    default_filter_vals,
@@ -99,7 +102,8 @@ def main(config_fn, return_app=False):
 
     # Create app layout
     controls_layout = html_layout(grouping_selectors, active_selectors, filter_selectors,
-                                  filter_val_selectors, thresh_selector, total_width=1000)
+                                  filter_val_selectors, thresh_selector, plot_type_dropdown,
+                                  total_width=1000)
     app.layout = html.Div([
         controls_layout,
         dcc.Graph(id='main-graph', figure=fig)
@@ -111,10 +115,10 @@ def main(config_fn, return_app=False):
         Output('main-graph', 'figure'),
         inputs
     )
-    def master_callback(new_thresh, *args):
+    def master_callback(new_thresh, plot_type, *args):
         filters = read_filters(group_obj.filter_values, args[:(2 * n_filters)], fltr_ctrl_types)
         groupings = read_groupings(args[(2 * n_filters):])
-        return group_obj.make_plot(filters, groupings, new_thresh)
+        return group_obj.make_plot[plot_type](filters, groupings, new_thresh)
 
     def filter_value_callback(i):
         @app.callback(

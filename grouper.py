@@ -20,11 +20,14 @@ class RegionProfile(object):
         self._height = options["App"].get("Height", 700)
         self.fltr_vals_dicts = dict([(k, [dict([('label', _lbl), ('value', _lbl)]) for _lbl in lbls])
                                      for k, lbls in self.filter_values.items()])
-        self.make_plot = self.make_sankey
+        '''self.make_plot = self.make_sankey
         if options["App"].get("Plot type", "Sankey") == "Sunburst":
             self.make_plot = self.make_sunburst
         elif options["App"].get("Plot type", "Sankey") == "Bar":
-            self.make_plot = self.make_horizontal_bar
+            self.make_plot = self.make_horizontal_bar'''
+        self.make_plot = {"Sankey": self.make_sankey,
+                          "Sunburst": self.make_sunburst,
+                          "Bar": self.make_horizontal_bar}
 
     def filter(self, fltr_spec):
         if len(fltr_spec) == 0:
@@ -184,5 +187,10 @@ class RegionProfile(object):
 
         fwgt = go.FigureWidget(data=all_bars, layout=go.Layout())
         fwgt.update_layout(barmode='stack')
+        fwgt.layout.height = self._height
+        return fwgt
+
+    def make_empty(self):
+        fwgt = go.FigureWidget(data=[])
         fwgt.layout.height = self._height
         return fwgt

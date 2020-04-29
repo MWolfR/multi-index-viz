@@ -63,8 +63,16 @@ def make_threshold_selector(min_val, max_val, use_step):
     return thresh_selector
 
 
+def make_plot_type_dropdown(default_val):
+    opt_dict = [dict([('label', v), ('value', v)]) for v in ['Sankey', 'Bar', 'Sunburst']]
+    return dcc.Dropdown(
+        options=opt_dict,
+        value=default_val,
+        id="plot-type-dropdown")
+
+
 def html_layout(grouping_selectors, active_selectors, filter_selectors, filter_val_selectors,
-                thresh_selector, total_width=1000):
+                thresh_selector, plot_type_dropdown, total_width=1000):
     n_groupings = len(grouping_selectors)
     n_filters = len(filter_selectors)
     adjectives = ['1st', '2nd', '3rd'] + ["{0}th".format(i) for i in range(4, n_groupings + 1)]
@@ -77,6 +85,7 @@ def html_layout(grouping_selectors, active_selectors, filter_selectors, filter_v
     col = 0
     i = 0
     n_cols = max(2, n_groupings)
+
     row_buffer = []
     for f_sel, f_v_sel in zip(filter_selectors, filter_val_selectors):
         row_buffer.extend([html.Td(html.Div([html.B("Filter category {0}:".format(i)), f_sel])),
@@ -92,7 +101,10 @@ def html_layout(grouping_selectors, active_selectors, filter_selectors, filter_v
         row_buffer = []
     fltr_rows.append(html.Tr(row_buffer +
                              [html.Td(html.Div([html.Label("Display threshold"),
-                              thresh_selector]), colSpan=2)]))
+                              thresh_selector])),
+                              html.Td(html.Div([html.Label("Type of plot"),
+                              plot_type_dropdown]))
+                              ]))
 
     grouping_div = html.Table(fltr_rows)
     return grouping_div
