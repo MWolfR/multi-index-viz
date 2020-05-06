@@ -35,7 +35,7 @@ def gen_options(fn):
 
     opts["App"]["Default grouping"] = grps
     opts["App"]["Default filter"] = [[[], []], [[], []], [[], []]]
-    opts["App"]["Strength threshold"] = [0.0, data.values.sum()]
+    opts["App"]["Strength threshold"] = [0.0, float(data.values.sum())]
 
     print(opts)
 
