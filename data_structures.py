@@ -174,9 +174,7 @@ class ConditionCollection(object):
             logger.info("Getting remaining conditions... Classic version")
             all_kwargs = self.__recursive_accumulate__(cond_lst)
         logger.info("Found %d combinations of conditions" % len(all_kwargs))
-        if len(all_kwargs) >= self.__pbar_min_num__:
-            pbar = progressbar.ProgressBar(widgets=[progressbar.FormatLabel('Pooling-->'), progressbar.Bar()])
-            return pbar(all_kwargs)
+
         return all_kwargs
 
     def idx(self, **kwargs):
