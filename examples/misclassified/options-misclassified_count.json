@@ -1,1 +1,57 @@
-{"Data": "misclassified_count.json", "Colors": {"Hierarchy": ["mtype", "layer", "misclassified"], "Values": {"_default": "rgba(120, 120, 120, 1.0)", "ALL": "rgba(10, 10, 10, 1.0)"}}, "Group translations": {}, "Labelling": {"Hierarchy": ["mtype", "layer", "misclassified"], "Values": {}}, "Version": "misclassified_count.json", "App": {"Default grouping": [["mtype"], ["layer"], ["misclassified"], []], "Default filter": [[[], []], [[], []], [[], []]], "Strength threshold": [0.0, 1722604.0]}}
+{
+  "Data": "misclassified_filtered.json",
+  "Colors": {
+    "Hierarchy": [
+      "mtype",
+      "layer",
+      "misclassified"
+    ],
+    "Values": {
+      "_default": "rgba(120, 120, 120, 1.0)",
+      "ALL": "rgba(10, 10, 10, 1.0)",
+      "NOT MISCLASSIFIED": "rgba(20, 225, 20, 1.0)"
+    }
+  },
+  "Group translations": {},
+  "Labelling": {
+    "Hierarchy": [
+      "mtype",
+      "layer",
+      "misclassified"
+    ],
+    "Values": {}
+  },
+  "Version": "misclassified_count.json",
+  "App": {
+    "Default grouping": [
+      [
+        "mtype"
+      ],
+      [
+        "layer"
+      ],
+      [
+        "misclassified"
+      ],
+      []
+    ],
+    "Default filter": [
+      [
+        [],
+        []
+      ],
+      [
+        [],
+        []
+      ],
+      [
+        [],
+        []
+      ]
+    ],
+    "Strength threshold": [
+      0.0,
+      1722604.0
+    ]
+  }
+}
