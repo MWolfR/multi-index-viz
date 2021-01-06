@@ -6,12 +6,15 @@ import plotly.graph_objects as go
 class RegionProfile(object):
 
     def __init__(self, data, options): # raw_profile, layer_labels, colors=None):
-        self._data = ConditionCollection.from_pandas(data)
-        self._filtered = self._data
-        self.possible_grp_cat = self._data.conditions()
+        self._data = dict([(_col, ConditionCollection.from_pandas(data[_col]))
+                           for _col in data.columns])
+        self.data_columns = data.columns
+        self._filtered = None  # self._data
+        self.possible_grp_cat = self._data[self.data_columns[0]].conditions()
         lbl_translator = options["Group translations"]
         self.possible_grp_lbl = [lbl_translator.get(_x, _x) for _x in self.possible_grp_cat]
-        self.filter_values = dict([(lbl, self._data.labels_of(lbl)) for lbl in self.possible_grp_cat])
+        self.filter_values = dict([(lbl, self._data[self.data_columns[0]].labels_of(lbl))
+                                   for lbl in self.possible_grp_cat])
         self._label_groups = options.get("Label groups", {})
         for k, v in self._label_groups.items():
             self.filter_values[k].extend(list(v.keys()))
@@ -29,14 +32,22 @@ class RegionProfile(object):
                           "Sunburst": self.make_sunburst,
                           "Bar": self.make_horizontal_bar}
 
-    def filter(self, fltr_spec):
+    def filter(self, data_column, fltr_spec):
         if len(fltr_spec) == 0:
-            return self._data
+            return self._data[data_column]
         fltr_spec = dict(fltr_spec)
         for k, v in self._label_groups.items():
             if k in fltr_spec:
                 fltr_spec[k] = numpy.hstack([v.get(_x, _x) for _x in fltr_spec[k]])
-        return self._data.filter(**fltr_spec)
+        return self._data[data_column].filter(**fltr_spec)
+
+    def normalize_by(self, filtered, nrmlz_cats):
+        pool_conds = filtered.conditions()
+        for category in nrmlz_cats:
+            if category in pool_conds:
+                pool_conds.remove(category)
+        nrmlz_vals = filtered.pool(pool_conds, func=numpy.nansum)
+        return filtered.extended_map(lambda x, y: x / y[0], [nrmlz_vals], ignore_conds=pool_conds)
 
     def _labeller_factory(self, grouping):
         grouping_sorted = [_x for _x in self._label_fmt["Hierarchy"]
@@ -91,9 +102,11 @@ class RegionProfile(object):
             colors.append(new_cols)
         return labels, str_mats, colors
 
-    def dataframe_for_plotting(self, fltr_spec, grouping_spec, threshold=0.0, include_color=False):
+    def dataframe_for_plotting(self, fltr_spec, grouping_spec, data_column, normalize_cats, include_color=False):
         from pandas import DataFrame
-        filtered_data = self.filter(fltr_spec)
+        filtered_data = self.filter(data_column, fltr_spec)
+        if len(normalize_cats) > 0:
+            filtered_data = self.normalize_by(filtered_data, normalize_cats)
         cat_groups = list(map(str, numpy.hstack(grouping_spec)))
         group_labels = [', '.join(grp) if len(grp) else "ALL"
                         for grp in grouping_spec]
@@ -147,8 +160,10 @@ class RegionProfile(object):
                         link_dict['color'].append(cols[o1 + i].replace("1.0", "0.6")) # Adjusting transparency
         return link_dict
 
-    def make_sankey(self, fltr_spec, grouping_spec, threshold=0.0):
-        filtered_data = self.filter(fltr_spec)
+    def make_sankey(self, fltr_spec, grouping_spec, data_column, normalize_cats, threshold=0.0):
+        filtered_data = self.filter(data_column, fltr_spec)
+        if len(normalize_cats) > 0:
+            filtered_data = self.normalize_by(filtered_data, normalize_cats)
         labels, str_mats, colors = self.make_groups(grouping_spec, filtered_data)
         all_labels, offset, lbl_colors = self.get_plotly_labels(labels, colors)
         label_dict = dict([("pad", 15), ("thickness", 20), ("line", dict([("color", "black"), ("width", 0.5)])),
@@ -160,9 +175,9 @@ class RegionProfile(object):
         fwgt.layout.height = self._height
         return fwgt
 
-    def make_sunburst(self, fltr_spec, grouping_spec, threshold=0.0):
+    def make_sunburst(self, fltr_spec, grouping_spec, data_column, normalize_cats):
         import plotly.express as px
-        dframe = self.dataframe_for_plotting(fltr_spec, grouping_spec, threshold=threshold, include_color=False)
+        dframe = self.dataframe_for_plotting(fltr_spec, grouping_spec, data_column, normalize_cats, include_color=False)
         group_labels = dframe.columns.values[:-1]
 
         sburst = px.sunburst(dframe, path=group_labels,
@@ -172,9 +187,9 @@ class RegionProfile(object):
         fwgt.layout.height = self._height
         return fwgt
 
-    def make_horizontal_bar(self, fltr_spec, grouping_spec, threshold=0.0):
+    def make_horizontal_bar(self, fltr_spec, grouping_spec, data_column, normalize_cats):
         dframe = self.dataframe_for_plotting(fltr_spec, grouping_spec,
-                                             threshold=threshold, include_color=True)
+                                             data_column, normalize_cats, include_color=True)
         group_labels = dframe.columns.values
 
         all_bars = []

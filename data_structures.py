@@ -449,7 +449,7 @@ class ConditionCollection(object):
                 ret_val.contents.extend(new_res)
             else:
                 #matching = [m[0] if len(m) == 1 else m for m in matching]
-                ret_val.append(ResultsWithConditions(func(x.res, *matching_vals, **func_kwargs), **matcher))
+                ret_val.append(ResultsWithConditions(func(x.res, *matching_vals, **func_kwargs), **x.cond.copy()))
         ret_val.__metadata__()
         return ret_val
 

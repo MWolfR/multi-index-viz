@@ -50,6 +50,17 @@ def make_grouping_selectors(group_obj, grouping):
     return grouping_selectors, active_selectors
 
 
+def make_normalizer_selector(group_obj):
+    grp_dict = [dict([('label', _lbl), ('value', _val)]) for _lbl, _val in
+                zip(group_obj.possible_grp_lbl, group_obj.possible_grp_cat)]
+    return dcc.Dropdown(
+        options=grp_dict,
+        value=[],
+        multi=True,
+        id="normalize-selector"
+    )
+
+
 def make_threshold_selector(min_val, max_val, use_step):
     marks_dict = dict([(v, "{0:3.2f}".format(v)) for v in numpy.linspace(min_val, max_val, 7)])
     thresh_selector = dcc.Slider(
@@ -71,8 +82,17 @@ def make_plot_type_dropdown(default_val):
         id="plot-type-dropdown")
 
 
+def make_data_column_dropdown(column_names):
+    default_val = column_names[0]
+    opt_dict = [dict([('label', v), ('value', v)]) for v in column_names]
+    return dcc.Dropdown(
+        options=opt_dict,
+        value=default_val,
+        id="data-column-dropdown")
+
+
 def html_layout(grouping_selectors, active_selectors, filter_selectors, filter_val_selectors,
-                thresh_selector, plot_type_dropdown, total_width=1000):
+                additional_elements, total_width=1000):
     n_groupings = len(grouping_selectors)
     n_filters = len(filter_selectors)
     adjectives = ['1st', '2nd', '3rd'] + ["{0}th".format(i) for i in range(4, n_groupings + 1)]
@@ -99,12 +119,12 @@ def html_layout(grouping_selectors, active_selectors, filter_selectors, filter_v
     if col + 2 > n_cols:
         fltr_rows.append(html.Tr(row_buffer))
         row_buffer = []
-    fltr_rows.append(html.Tr(row_buffer +
-                             [html.Td(html.Div([html.Label("Display threshold"),
-                              thresh_selector])),
-                              html.Td(html.Div([html.Label("Type of plot"),
-                              plot_type_dropdown]))
-                              ]))
+    for k, v in additional_elements.items():
+        row_buffer.append(
+            html.Td(html.Div([html.Label(k),
+                              v]))
+        )
+    fltr_rows.append(html.Tr(row_buffer))
 
     grouping_div = html.Table(fltr_rows)
     return grouping_div
