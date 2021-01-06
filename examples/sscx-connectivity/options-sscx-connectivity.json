@@ -1,0 +1,67 @@
+{
+	"Data": "sscx-connectivity.json", 
+	"Colors": {
+		"Hierarchy": ["Pre layer", "Pre mtype", "Range", "Post layer", "Post mtype"],
+	       "Values": {
+            "L1": "rgba(150, 150, 240, 1.0)",
+            "L23": "rgba(235, 120, 145, 1.0)",
+	    "L3": "rgba(245, 110, 145, 1.0)",
+	    "L2": "rgba(225, 130, 145, 1.0)",
+            "L4": "rgba(120, 20, 220, 1.0)",
+            "L5": "rgba(225, 100, 245, 1.0)",
+            "L6": "rgba(250, 200, 80, 1.0)",
+            "Thalamus": "rgba(90, 250, 200, 1.0)",
+	    "IPC": "rgba(220, 105, 20, 1.0)",
+            "TPC:A": "rgba(75, 235, 25, 1.0)",
+            "TPC:B": "rgba(75, 235, 25, 1.0)",
+            "TPC": "rgba(75, 235, 25, 1.0)",
+            "BPC": "rgba(50, 75, 235, 1.0)",
+            "UPC": "rgba(140, 0, 200, 1.0)",
+            "TPC:C": "rgba(140, 0, 200, 1.0)",
+            "SSC": "rgba(25, 140, 200, 1.0)",
+            "HPC": "rgba(105, 45, 200, 1.0)",
+	    "NBC": "rgba(25, 85, 250, 1.0)",
+	    "LBC": "rgba(45, 45, 250, 1.0)",
+	    "SBC": "rgba(65, 65, 220, 1.0)",
+	    "BTC": "rgba(105, 0, 220, 1.0)",
+	    "MC": "rgba(185, 0, 185, 1.0)",
+	    "BP": "rgba(55, 185, 55, 1.0)",
+	    "NGC": "rgba(60, 125, 105, 1.0)",
+	    "DBC": "rgba(100, 235, 45, 1.0)",
+	    "SAC": "rgba(245, 75, 0, 1.0)",
+	    "LAC": "rgba(225, 55, 10, 1.0)",
+	    "HAC": "rgba(250, 35, 20, 1.0)",
+	    "DAC": "rgba(245, 35, 45, 1.0)",
+	    "NGC-DA": "rgba(185, 95, 15, 1.0)",
+	    "NGC-SA": "rgba(175, 75, 35, 1.0)",
+	    "CHC": "rgba(0, 105, 105, 1.0)",
+	    "thalamo-cortical": "rgba(255, 25, 25, 1.0)",
+	    "local": "rgba(25, 255, 25, 1.0)",
+	    "midrange": "rgba(25, 25, 255, 1.0)",
+            "_default": "rgba(150, 150, 150, 1.0)",
+            "ALL": "rgba(105, 45, 200, 1.0)"
+            }	
+	}, 
+	"Group translations": {
+	}, 
+	"Labelling": {
+		"Hierarchy": ["Pre mtype", "Post mtype", "Pre layer", "Post layer", "Range"], 
+		"Values": {}
+	},
+        "Label groups": {
+        "Pre mtype": {
+            "PCs": ["IPC", "TPC:A", "TPC:B", "TPC:C", "BPC", "UPC", "TPC"],
+	    "BCs": ["LBC", "NBC", "SBC"],
+	    "Exc": ["IPC", "TPC:A", "TPC:B", "TPC:C", "BPC", "UPC", "TPC", "SSC", "Thalamus"]
+        },
+        "Post mtype": {
+	    "PCs": ["IPC", "TPC:A", "TPC:B", "TPC:C", "BPC", "UPC", "TPC"],
+	    "BCs": ["LBC", "NBC", "SBC"]
+        }
+        },	
+	"Version": "sscx-connectivity.json", 
+	"App": {
+		"Default grouping": [["Pre layer"], ["Pre mtype"], ["Post layer"], ["Post mtype"]], 
+		"Default filter": [["Range", ["local"]], [[], []] ], "Strength threshold": [0.0, 24514573984.15071]
+	}
+}
