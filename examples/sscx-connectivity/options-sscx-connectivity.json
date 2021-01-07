@@ -2,7 +2,8 @@
 	"Data": "sscx-connectivity.json",
 	"Normalization datasets": {
 		"Per presynaptic neuron": "sscx-normalization-presynaptic-neurons.json",
-		"Per postsynaptic neuron": "sscx-normalization-postsynaptic-neurons.json"
+		"Per postsynaptic neuron": "sscx-normalization-postsynaptic-neurons.json",
+		"Per neuron pair": "sscx-normalization-neuron-pairs.json"
 	},
 	"Colors": {
 		"Hierarchy": ["Pre layer", "Pre mtype", "Range", "Post layer", "Post mtype"],
