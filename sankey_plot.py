@@ -50,15 +50,28 @@ def make_grouping_selectors(group_obj, grouping):
     return grouping_selectors, active_selectors
 
 
-def make_normalizer_selector(group_obj):
+def make_normalizer_selectors(group_obj):
+    selectors = []
+    # 1.: Normalization by grouping
     grp_dict = [dict([('label', _lbl), ('value', _val)]) for _lbl, _val in
                 zip(group_obj.possible_grp_lbl, group_obj.possible_grp_cat)]
-    return dcc.Dropdown(
+    selectors.append(dcc.Dropdown(
         options=grp_dict,
         value=[],
         multi=True,
-        id="normalize-selector"
-    )
+        id="normalize-group-selector"
+    ))
+    # 2.: Normalization by external data
+    grp_dict = [dict([('label', _lbl), ('value', _lbl)]) for _lbl in
+                group_obj._norm_data.keys() if _lbl is not None]
+    # grp_dict.append(dict([('label', 'None'), ('value', None)]))
+    selectors.append(dcc.Dropdown(
+        options=grp_dict,
+        value=None,
+        multi=False,
+        id="normalize-data-selector"
+    ))
+    return selectors
 
 
 def make_threshold_selector(min_val, max_val, use_step):

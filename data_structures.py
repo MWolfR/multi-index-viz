@@ -160,8 +160,8 @@ class ConditionCollection(object):
             [cond_lst.remove(x) for x in conds]
         else:
             cond_lst.remove(conds)
-            conds = [conds]
-        cond_lst = [_c for _c in cond_lst if len(self.labels_of(_c)) > 1]
+
+        cond_lst = [_c for _c in cond_lst]  # if len(self.labels_of(_c)) > 1]
         if len(cond_lst) == 0:
             return [{}]
         srt = numpy.argsort([numpy.mean(list(map(len, list(self.cond_map[k].values()))))
@@ -177,11 +177,14 @@ class ConditionCollection(object):
 
         return all_kwargs
 
-    def idx(self, **kwargs):
+    def idx(self, filter_lenient=False, **kwargs):
         idx = list(range(len(self.contents)))
         for k, v in list(kwargs.items()):
             if k not in self.cond_map:
-                return numpy.array([], dtype=int)
+                if filter_lenient:
+                    continue
+                else:
+                    return numpy.array([], dtype=int)
             if v.__hash__ is not None:
                 idx = numpy.intersect1d(idx, self.cond_map[k].get(v, []))
             else:
@@ -349,7 +352,7 @@ class ConditionCollection(object):
             if func is None:
                 return self
             else:
-                return self.map(lambda x: x)
+                return self.map(func)
         if func is None:
             func = lambda x: x
         ret = []

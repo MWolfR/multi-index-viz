@@ -1,5 +1,9 @@
 {
-	"Data": "sscx-connectivity.json", 
+	"Data": "sscx-connectivity.json",
+	"Normalization datasets": {
+		"Per presynaptic neuron": "sscx-normalization-presynaptic-neurons.json",
+		"Per postsynaptic neuron": "sscx-normalization-postsynaptic-neurons.json"
+	},
 	"Colors": {
 		"Hierarchy": ["Pre layer", "Pre mtype", "Range", "Post layer", "Post mtype"],
 	       "Values": {
@@ -51,12 +55,12 @@
         "Label groups": {
         "Pre mtype": {
             "PCs": ["IPC", "TPC:A", "TPC:B", "TPC:C", "BPC", "UPC", "TPC"],
-	    "BCs": ["LBC", "NBC", "SBC"],
-	    "Exc": ["IPC", "TPC:A", "TPC:B", "TPC:C", "BPC", "UPC", "TPC", "SSC", "Thalamus"]
+	        "BCs": ["LBC", "NBC", "SBC"],
+	        "Exc": ["IPC", "TPC:A", "TPC:B", "TPC:C", "BPC", "UPC", "TPC", "SSC", "Thalamus"]
         },
         "Post mtype": {
-	    "PCs": ["IPC", "TPC:A", "TPC:B", "TPC:C", "BPC", "UPC", "TPC"],
-	    "BCs": ["LBC", "NBC", "SBC"]
+	        "PCs": ["IPC", "TPC:A", "TPC:B", "TPC:C", "BPC", "UPC", "TPC"],
+	        "BCs": ["LBC", "NBC", "SBC"]
         }
         },	
 	"Version": "sscx-connectivity.json", 

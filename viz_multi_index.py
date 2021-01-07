@@ -13,21 +13,33 @@ from dash.dash import no_update
 from grouper import RegionProfile
 from sankey_plot import make_filter_selectors, make_grouping_selectors,\
     make_threshold_selector, make_plot_type_dropdown, html_layout, str_f_val, str_fltr,\
-    make_data_column_dropdown, make_normalizer_selector
+    make_data_column_dropdown, make_normalizer_selectors
+
+
+def read_data(input_specs, root):
+    if isinstance(input_specs, str):
+        data_fn = os.path.join(root, input_specs)
+        with open(data_fn, "r") as fid:
+            data = pandas.read_json(fid, orient="table")
+            return data
+    elif isinstance(input_specs, dict):
+        return dict([(k, read_data(v, root)) for k, v in input_specs.items()])
 
 
 def read_config(config_fn):
     with open(config_fn, "r") as fid:
         options = json.load(fid)
-    if isinstance(options["Data"], str):
+    """if isinstance(options["Data"], str):
         data_fn = os.path.join(os.path.split(os.path.abspath(config_fn))[0], options["Data"])
         with open(data_fn, "r") as fid:
             data = pandas.read_json(fid, orient="table")
     else:
-        data = pandas.read_json(options["Data"], orient="table")
+        data = pandas.read_json(options["Data"], orient="table")"""
+    data = read_data(options["Data"], os.path.split(os.path.abspath(config_fn))[0])
+    nrmlz_data = read_data(options.get("Normalization datasets", {}), os.path.split(os.path.abspath(config_fn))[0])
     if "Filter control types" not in options["App"]:
         options["App"]["Filter control types"] = ["Dropdown" for _ in options["App"]["Default filter"]]
-    return data, options
+    return data, nrmlz_data, options
 
 
 def read_defaults(options):
@@ -66,12 +78,12 @@ def read_filters(fltr_vals_dicts, filters_and_values, fltr_ctrl_types):
 
 def main(config_fn, return_app=False):
     # Read configuration
-    data, options = read_config(config_fn)
+    data, nrmlz_data, options = read_config(config_fn)
     default_grouping, default_filters, default_filter_vals, min_val, max_val, use_step = read_defaults(options)
 
     fltr_ctrl_types = options["App"]["Filter control types"]
     # Set up initial state
-    group_obj = RegionProfile(data, options)
+    group_obj = RegionProfile(data, nrmlz_data, options)
 
     # Create app
     app = dash.Dash(__name__)#,
@@ -83,10 +95,10 @@ def main(config_fn, return_app=False):
 
     # thresh_selector = make_threshold_selector(min_val, max_val, use_step)
     data_col_selector = make_data_column_dropdown(group_obj.data_columns)
-    normalizer_selector = make_normalizer_selector(group_obj)
+    normalizer_selectors = make_normalizer_selectors(group_obj)
     plot_type_dropdown = make_plot_type_dropdown(options["App"].get("Plot type", "Sankey"))
     inputs = [Input(data_col_selector.id, 'value'), Input(plot_type_dropdown.id, 'value'),
-              Input(normalizer_selector.id, 'value')]
+              Input(normalizer_selectors[0].id, 'value'), Input(normalizer_selectors[1].id, 'value')]
 
     filter_selectors, filter_val_selectors = make_filter_selectors(group_obj, default_filters,
                                                                    default_filter_vals,
@@ -104,7 +116,8 @@ def main(config_fn, return_app=False):
                                   filter_val_selectors,
                                   {'Data set': data_col_selector,
                                    'Plot type': plot_type_dropdown,
-                                   'Normalize by': normalizer_selector
+                                   'Normalize by group': normalizer_selectors[0],
+                                   'Normalize by external data': normalizer_selectors[1]
                                    },
                                   total_width=1000)
     app.layout = html.Div([
@@ -118,10 +131,11 @@ def main(config_fn, return_app=False):
         Output('main-graph', 'figure'),
         inputs
     )
-    def master_callback(new_data_col, plot_type, normalize_cats, *args):
+    def master_callback(new_data_col, plot_type, normalize_cats, normalize_data, *args):
         filters = read_filters(group_obj.filter_values, args[:(2 * n_filters)], fltr_ctrl_types)
         groupings = read_groupings(args[(2 * n_filters):])
-        return group_obj.make_plot[plot_type](filters, groupings, new_data_col, normalize_cats)
+        return group_obj.make_plot[plot_type](filters, groupings, new_data_col, normalize_cats,
+                                              normalization_dataset=normalize_data)
 
     def filter_value_callback(i):
         @app.callback(
