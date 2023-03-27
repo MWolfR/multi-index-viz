@@ -1,13 +1,13 @@
 from __future__ import print_function
 from __future__ import division
 from __future__ import unicode_literals
-from future import standard_library
-standard_library.install_aliases()
+# from future import standard_library
+# standard_library.install_aliases()
 from builtins import zip
 from builtins import map
 from builtins import str
 from builtins import range
-from past.utils import old_div
+# from past.utils import old_div
 from builtins import object
 import numpy
 # import os
@@ -148,7 +148,7 @@ class ConditionCollection(object):
         uidx = numpy.unique(idxx)
         final_conds = []
         for cond, div_fac, mod_fac, kk in zip(splt_at, div_facs, used_facs, used_keys):
-            final_conds.append([kk[int(_i)] for _i in old_div(numpy.mod(uidx, mod_fac), div_fac)])
+            final_conds.append([kk[int(_i)] for _i in numpy.mod(uidx, mod_fac) / div_fac])
         return [dict(list(zip(splt_at, zipped_conds))) for zipped_conds in zip(*final_conds)]
 
     def __pool_combinations__(self, conds, force_no_empty_conds=False):
